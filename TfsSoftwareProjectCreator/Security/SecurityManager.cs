@@ -37,7 +37,7 @@ namespace TfsSoftwareProjectCreator.Security
                 }
                 catch(Exception ex)
                 {
-                    //membership already exists 
+                    Console.WriteLine($"Error happened while adding member to group: {ex.Message}");
                 }
             }
         }

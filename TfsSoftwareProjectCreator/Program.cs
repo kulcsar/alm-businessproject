@@ -2,6 +2,7 @@
 using Microsoft.TeamFoundation.Framework.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TfsSoftwareProjectCreator.Entities;
 using TfsSoftwareProjectCreator.Excel;
 using TfsSoftwareProjectCreator.Group;
@@ -51,8 +52,16 @@ namespace TfsSoftwareProjectCreator
             //Add TFS Groups as a member to the TFS Team
             AddTfsTeamMembers(businessProject, team.Identity, tfsGroups);
 
-            //Create repository folders             
-            CreateRepositoryFolders(businessProject, tfvcFolders);
+            //Create TFVC repository folders 
+            if (tfvcFolders.Folders.Any())
+            {
+                CreateTfvcRepositoryFolders(businessProject, tfvcFolders);
+            }
+
+            //NEXT: Create GIT repository and folders
+
+            //NEXT: Create Build definition  
+
         }
 
         /// <summary>
@@ -108,16 +117,16 @@ namespace TfsSoftwareProjectCreator
         }
 
         /// <summary>
-        /// Create repository folders
+        /// Create Team Foundation Version Control repository folders
         /// </summary>
         /// <param name="businessProject"></param>
         /// <param name="tfvcFolder"></param>
-        private static void CreateRepositoryFolders(BusinessProject businessProject, TfvcFolder tfvcFolder)
+        private static void CreateTfvcRepositoryFolders(BusinessProject businessProject, TfvcFolder tfvcFolder)
         {
             var respositoryManager = new RepositoryManager(businessProject.TeamProjectCollectionUrl, 
                                                             businessProject.TeamProjectName,
                                                             businessProject.BusinessProjectName);
-            respositoryManager.CreateFolders(tfvcFolder);
+            respositoryManager.CreateTfvcFolders(tfvcFolder);
         }       
     }
 }

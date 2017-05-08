@@ -32,7 +32,7 @@ namespace TfsSoftwareProjectCreator.Repository
         /// Create TFVC folders
         /// </summary>
         /// <param name="tfvcFolder"></param>
-        public void CreateFolders(TfvcFolder tfvcFolder)
+        public void CreateTfvcFolders(TfvcFolder tfvcFolder)
         {
             var workspaceName = Guid.NewGuid().ToString();
 

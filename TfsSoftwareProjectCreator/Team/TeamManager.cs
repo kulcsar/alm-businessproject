@@ -132,18 +132,18 @@ namespace TfsSoftwareProjectCreator.Team
             TeamFoundationTeam team = _tfsTeamService.CreateTeam(
                 _projectInfo.Uri.ToString(), _softwareProjectName, _softwareProjectDescription, null);
 
-            //TODO: test this section!!!
+          
             //Set the IterationPaths and BacklogIterationPath for the TFS Team
-            //var teamConfiguration = _teamSettingsConfigurationService.GetTeamConfigurations(new[] { team.Identity.TeamFoundationId });
-            //TeamConfiguration tconfig = teamConfiguration.FirstOrDefault();
-            //TeamSettings ts = tconfig.TeamSettings;
-            //ts.IterationPaths = new string[] { $"{_projectInfo.Name}\\{_softwareProjectName}\\Sprint 1" };
-            //ts.BacklogIterationPath = _projectInfo.Name;
-            //TeamFieldValue tfv = new TeamFieldValue();
-            //tfv.IncludeChildren = true;
-            //tfv.Value = $"{_projectInfo.Name}\\{_softwareProjectName}";
-            //ts.TeamFieldValues = new TeamFieldValue[] { tfv };
-            //_teamSettingsConfigurationService.SetTeamSettings(tconfig.TeamId, ts);
+            var teamConfiguration = _teamSettingsConfigurationService.GetTeamConfigurations(new[] { team.Identity.TeamFoundationId });
+            TeamConfiguration tconfig = teamConfiguration.FirstOrDefault();
+            TeamSettings ts = tconfig.TeamSettings;
+            ts.IterationPaths = new string[] { $"{_projectInfo.Name}\\{_softwareProjectName}\\Sprint 1" };
+            ts.BacklogIterationPath = $"{_projectInfo.Name}\\{_softwareProjectName}";
+            TeamFieldValue tfv = new TeamFieldValue();
+            tfv.IncludeChildren = true;
+            tfv.Value = ts.BacklogIterationPath;
+            ts.TeamFieldValues = new TeamFieldValue[] { tfv };
+            _teamSettingsConfigurationService.SetTeamSettings(tconfig.TeamId, ts);
 
             return team;
         }
