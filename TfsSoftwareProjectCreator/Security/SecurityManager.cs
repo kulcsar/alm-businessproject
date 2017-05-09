@@ -34,10 +34,12 @@ namespace TfsSoftwareProjectCreator.Security
                 try
                 {
                     _identityManagementService.AddMemberToApplicationGroup(identity.Descriptor, member.Descriptor);
+
+                    Console.WriteLine($"Identity '{member.DisplayName}' added to group '{identity.DisplayName}'.");
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine($"Error happened while adding member to group: {ex.Message}");
+                    Console.WriteLine($"Error happened while adding member '{member.DisplayName}' to group '{identity.DisplayName}' ::: {ex.Message}");
                 }
             }
         }

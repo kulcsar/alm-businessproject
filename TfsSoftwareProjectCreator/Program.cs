@@ -3,6 +3,7 @@ using Microsoft.TeamFoundation.Framework.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TfsSoftwareProjectCreator.Build;
 using TfsSoftwareProjectCreator.Entities;
 using TfsSoftwareProjectCreator.Excel;
 using TfsSoftwareProjectCreator.Group;
@@ -42,10 +43,11 @@ namespace TfsSoftwareProjectCreator
             var workItemAreaIteration = new WorkItemAreaIteration(excelContent);
             var securityGroup = new SecurityGroup(excelContent);
             var tfvcFolders = new TfvcFolder(excelContent);
+            var buildDefTemplate = new BuildDefTemplate(excelContent);
 
             //Create new Team with Areas, Iterations
             var team = CreateTeam(businessProject, workItemAreaIteration);
-            
+
             //Create new TFS Groups
             var tfsGroups = CreateGroups(businessProject, securityGroup);
 
@@ -58,12 +60,15 @@ namespace TfsSoftwareProjectCreator
                 CreateTfvcRepositoryFolders(businessProject, tfvcFolders);
             }
 
-            //NEXT: Create GIT repository and folders
+            // NEXT: Create GIT repository and folders
 
-            //NEXT: Create Build definition  
+            // Create Build definition 
+            CreateBuildDefinition(businessProject, buildDefTemplate);
 
+            Console.WriteLine("TfsSoftwareProjectCreator finished. Press Enter to finish...");
+            Console.ReadLine();
         }
-
+        
         /// <summary>
         /// Create new Team with Areas, Iterations
         /// </summary>
@@ -127,6 +132,20 @@ namespace TfsSoftwareProjectCreator
                                                             businessProject.TeamProjectName,
                                                             businessProject.BusinessProjectName);
             respositoryManager.CreateTfvcFolders(tfvcFolder);
-        }       
+        }
+
+        /// <summary>
+        /// Create Build definition based on template
+        /// </summary>
+        /// <param name="businessProject"></param>
+        /// <param name="buildDefTemplate"></param>
+        private static void CreateBuildDefinition(BusinessProject businessProject, BuildDefTemplate buildDefTemplate)
+        {
+            var buildManager = new BuildManager(businessProject.TeamProjectCollectionUrl,
+                                                businessProject.TeamProjectName,
+                                                businessProject.BusinessProjectName);
+
+            buildManager.CreateBuildDefinition(buildDefTemplate);
+        }
     }
 }

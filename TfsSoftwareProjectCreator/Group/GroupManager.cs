@@ -49,6 +49,12 @@ namespace TfsSoftwareProjectCreator.Group
                 // Group doesn't exist, create one
                 var groupDescriptor = _identityManagementService.CreateApplicationGroup(_projectInfo.Uri, groupNameToCreate, null);
                 group = _identityManagementService.ReadIdentity(groupDescriptor, MembershipQuery.None, ReadIdentityOptions.IncludeReadFromSource);
+
+                Console.WriteLine($"Group created: '{groupName}'");
+            }
+            else
+            {
+                Console.WriteLine($"Group already exists: '{groupName}'");
             }
             
             return group;

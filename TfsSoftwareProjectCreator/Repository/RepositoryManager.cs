@@ -34,43 +34,57 @@ namespace TfsSoftwareProjectCreator.Repository
         /// <param name="tfvcFolder"></param>
         public void CreateTfvcFolders(TfvcFolder tfvcFolder)
         {
-            var workspaceName = Guid.NewGuid().ToString();
+            Workspace workspace = null;
+            string localPath = null;
 
-            // Create a temporary workspace
-            var workspace = _versionControlServer.CreateWorkspace(workspaceName,
-                                                                  _tfsTeamProjectCollection.AuthorizedIdentity.UniqueName,
-                                                                  $"Temporary workspace for project {_softwareProjectName}");
-
-            // Create a temporary local folder for workspace
-            string localPath = $"C:\\{workspaceName}";
-            Directory.CreateDirectory(localPath);
-
-            // For this workspace, map a server folder to a local folder
-            workspace.Map($"$/{_teamProjectName}", localPath);
-
-            // Create directories for software project
-            string rootPath = Path.Combine(localPath, _softwareProjectName);
-            
-            // Always create root folder i.e. $/TeamProjectName/SoftwareProjectName
-            Directory.CreateDirectory(rootPath);
-            
-            // Create folders 
-            foreach (var folder in tfvcFolder.Folders)
+            try
             {
-                var folderPath = RemoveRootPath($"$/{_teamProjectName}/{_softwareProjectName}", folder);
-                Directory.CreateDirectory(Path.Combine(rootPath, folderPath));
+                var workspaceName = Guid.NewGuid().ToString();
+
+                // Create a temporary workspace
+                workspace = _versionControlServer.CreateWorkspace(workspaceName,
+                                                                      _tfsTeamProjectCollection.AuthorizedIdentity.UniqueName,
+                                                                      $"Temporary workspace for project {_softwareProjectName}");
+
+                // Create a temporary local folder for workspace
+                localPath = $"C:\\{workspaceName}";
+                Directory.CreateDirectory(localPath);
+
+                // For this workspace, map a server folder to a local folder
+                workspace.Map($"$/{_teamProjectName}", localPath);
+
+                // Create directories for software project
+                string rootPath = Path.Combine(localPath, _softwareProjectName);
+
+                // Always create root folder i.e. $/TeamProjectName/SoftwareProjectName
+                Directory.CreateDirectory(rootPath);
+
+                // Create folders 
+                foreach (var folder in tfvcFolder.Folders)
+                {
+                    var folderPath = RemoveRootPath($"$/{_teamProjectName}/{_softwareProjectName}", folder);
+                    Directory.CreateDirectory(Path.Combine(rootPath, folderPath));
+                }
+
+                // Check in folders
+                workspace.PendAdd(rootPath, true);
+                var pendingChanges = workspace.GetPendingChanges();
+                int changesetNumber = workspace.CheckIn(pendingChanges, $"Base folder structure created for project: {_softwareProjectName}");
+
+                Console.WriteLine($"TFVC repository folders created and checked-in with changeset id '{changesetNumber}'.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error happened while creating TFVC repository folders ::: {ex.Message}");
+            }
+            finally
+            {
+                // Delete the temporary workspace
+                if (workspace != null) workspace.Delete();
 
-            // Check in folders
-            workspace.PendAdd(rootPath, true);
-            var pendingChanges = workspace.GetPendingChanges();            
-            int changesetNumber = workspace.CheckIn(pendingChanges, $"Base folder structure created for project: {_softwareProjectName}");
-
-            // Delete the temporary workspace
-            workspace.Delete();
-
-            // Create the temporary local folder
-            Directory.Delete(localPath, true);
+                // Create the temporary local folder
+                if (!string.IsNullOrEmpty(localPath)) Directory.Delete(localPath, true);
+            }
         }
 
         /// <summary>

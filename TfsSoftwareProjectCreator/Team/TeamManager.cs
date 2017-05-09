@@ -2,10 +2,7 @@
 using Microsoft.TeamFoundation.ProcessConfiguration.Client;
 using Microsoft.TeamFoundation.Server;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TfsSoftwareProjectCreator.Entities;
 
 namespace TfsSoftwareProjectCreator.Team
@@ -69,7 +66,8 @@ namespace TfsSoftwareProjectCreator.Team
                 retVal = _commonStructureService4.GetNodeFromPath(elementPath);
                 if (retVal != null)
                 {
-                    return null; //already exists
+                    Console.WriteLine($"Node '{elementPath}' already exists.");
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -111,6 +109,8 @@ namespace TfsSoftwareProjectCreator.Team
             }
             string newPathUri = _commonStructureService4.CreateNode(newPathName, previousPath.Uri);
 
+            Console.WriteLine($"Node '{newPathName}' in '{elementPath}' created.");
+
             return _commonStructureService4.GetNode(newPathUri);
         }
 
@@ -125,13 +125,13 @@ namespace TfsSoftwareProjectCreator.Team
             var existingTeam = teams.FirstOrDefault(t => t.Name == _softwareProjectName);
             if (existingTeam != null)
             {
+                Console.WriteLine($"Team '{existingTeam.Name}' already exists.");
                 return existingTeam;
             }
 
             //Create TFS Team
             TeamFoundationTeam team = _tfsTeamService.CreateTeam(
                 _projectInfo.Uri.ToString(), _softwareProjectName, _softwareProjectDescription, null);
-
           
             //Set the IterationPaths and BacklogIterationPath for the TFS Team
             var teamConfiguration = _teamSettingsConfigurationService.GetTeamConfigurations(new[] { team.Identity.TeamFoundationId });
@@ -144,6 +144,8 @@ namespace TfsSoftwareProjectCreator.Team
             tfv.Value = ts.BacklogIterationPath;
             ts.TeamFieldValues = new TeamFieldValue[] { tfv };
             _teamSettingsConfigurationService.SetTeamSettings(tconfig.TeamId, ts);
+
+            Console.WriteLine($"Team '{team.Name}' created.");
 
             return team;
         }

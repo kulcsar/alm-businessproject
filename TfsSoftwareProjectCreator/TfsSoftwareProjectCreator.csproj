@@ -235,6 +235,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\BuildDefTemplate.cs" />
+    <Compile Include="Build\BuildManager.cs" />
     <Compile Include="Entities\SecurityGroup.cs" />
     <Compile Include="Entities\BusinessProject.cs" />
     <Compile Include="Entities\WorkItemAreaIterationNode.cs" />
